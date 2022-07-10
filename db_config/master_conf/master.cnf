@@ -3,4 +3,4 @@ log-bin                         # enable binary logging
 server_id=3000                  # used to uniquely identify the server
 log-basename=my-mariadb         # used to be independent of hostname changes 
                                 # (otherwise name is <datadir>/mysql-bin)
-#binlog-format=MIXED            #default 
+#binlog-format=MIXED            #default
