@@ -1,0 +1,40 @@
+version: "3.1"
+services:
+  master:
+    image: "mariadb:latest"
+    restart: always
+    volumes:
+      - ./db_config/master_conf:/etc/mysql/conf.d:z
+      - ./db_init/master_init:/docker-entrypoint-initdb.d:z
+      - ./logs/master_logs:/var/lib/mysql
+    environment:
+      MARIADB_ROOT_PASSWORD: $MARIADB_ROOT_PASSWORD
+      MYSQL_INITDB_SKIP_TZINFO: "Y"
+    working_dir: /var/lib/mysql
+    ports:
+      - 3306:3306
+  slave:
+    depends_on:
+      - master
+    image: "mariadb:latest"
+    restart: always
+    volumes:
+      - ./db_config/slave_config:/etc/mysql/conf.d:z
+      - ./db_init/slave_init:/docker-entrypoint-initdb.d:z
+      - ./logs/slave_logs:/var/lib/mysql
+    environment:
+      MARIADB_ROOT_PASSWORD: $MARIADB_ROOT_PASSWORD
+      MYSQL_INITDB_SKIP_TZINFO: "Y"
+    working_dir: /var/lib/mysql
+    links:
+      - master:master
+    ports:
+      - 3307:3306
+        #  docker run -d --rm --name mariadb-primary \
+        # -v $PWD/config-files/primarycnf:/etc/mysql/conf.d:z \
+        # -v $PWD/primaryinit:/docker-entrypoint-initdb.d:z \
+        # -v $PWD/log-files-primary:/var/lib/mysql \
+        # -w /var/lib/mysql \
+        # -e MARIADB_ROOT_PASSWORD=secret \
+        # -e MYSQL_INITDB_SKIP_TZINFO=Y \
+        # mariadb:latest
